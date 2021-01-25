@@ -7,7 +7,7 @@ class individual {
     std::vector<unsigned> gene;
     unsigned fitness;
 
-    public:
+public:
 
     individual();
     ~individual() = default;
