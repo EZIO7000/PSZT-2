@@ -24,23 +24,35 @@ int main() {
     xml_document doc;
 
     if (!doc.load_file("bin/test.xml")) return -1;
-    xml_node tools = doc.child("network").child("networkStructure").child("nodes");
+    xml_node tools = doc.child("network").child("demands");
 
     for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
     {
 
         for (xml_attribute_iterator ait = it->attributes_begin(); ait != it->attributes_end(); ++ait)
         {
-            cout << "Node " << ait->value();
-            
+            cout << "Node " << ait->value();   
         }
 
-        xml_node node = it->child("coordinates");
+        // do uzupelnienia tablicy demands
+        cout << " " << it->child("demandValue").child_value();
 
-        for (xml_node_iterator ait = node.begin(); ait != node.end(); ++ait)
+        //cout << "      " << it->child("admissiblePaths");
+        xml_node path = it->child("admissiblePaths");
+
+        //xml_node_iterator path_it = it->child("admissiblePaths");
+        cout << "         ";
+
+        for (xml_node_iterator pit = path.begin(); pit != path.end(); ++pit)
         {
-            
-            cout << " " << ait->child_value();
+            xml_node link = pit->child("admissiblePath");
+
+            for(xml_node_iterator lit = link.begin(); lit != link.end(); ++lit)
+            {
+                cout << " " << lit->child_value();   
+            }
+
+            cout << "   ";
         }
 
         cout << endl;
