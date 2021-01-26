@@ -24,7 +24,7 @@ int main() {
     xml_document doc;
 
     if (!doc.load_file("bin/test.xml")) return -1;
-    xml_node tools = doc.child("networkStructure").child("nodes").child("node");
+    xml_node tools = doc.child("network").child("networkStructure").child("nodes");
 
     for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
     {
