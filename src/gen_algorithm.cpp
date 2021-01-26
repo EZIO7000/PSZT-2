@@ -345,9 +345,9 @@ individual gen_algorithm::start() {
         cross();
         mutate();
         fintess_calc();
-        std::cout << "lewy: " << l_best_so_far;
-        std::cout << "prawy: " << r_best_so_far;
-        std::cout << best_so_far;
+        //std::cout << "lewy: " << l_best_so_far;
+        //std::cout << "prawy: " << r_best_so_far;
+        //std::cout << best_so_far;
     }
     return best_so_far;
 }

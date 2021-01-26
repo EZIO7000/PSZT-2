@@ -3,6 +3,10 @@
 #include <chrono>
 #include <fstream>
 #include <sstream>
+#include "pugixml.hpp"
+
+using namespace std;
+using namespace pugi;
 
 int main() {
 
@@ -13,6 +17,28 @@ int main() {
     int parm_t = 15;
     int gen_count = 500;
     std::string log;
+
+    //////////////////////////////
+
+    cout << "\nParsing .....\n\n";
+    xml_document doc;
+
+    if (!doc.load_file("bin/test.xml")) return -1;
+    xml_node tools = doc.child("networkStructure").child("nodes").child("node");
+
+    for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
+    {
+        cout << "Employees:";
+
+        for (xml_attribute_iterator ait = it->attributes_begin(); ait != it->attributes_end(); ++ait)
+        {
+            cout << " " << ait->name() << "=" << ait->value();
+        }
+
+        cout << endl;
+    }
+
+    //////////////////////////////
 
     log += "Rozmiar populacji;Rozmiar genu;Prawdopodobienstwo mutacji;Prawdopodobienstwo krzyzowania;parametr t;ilosc generacji;Najlepsze rozwiazanie;Czas;Wartosc funkcji celu\n";
 
