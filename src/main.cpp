@@ -28,11 +28,19 @@ int main() {
 
     for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
     {
-        cout << "Employees:";
 
         for (xml_attribute_iterator ait = it->attributes_begin(); ait != it->attributes_end(); ++ait)
         {
-            cout << " " << ait->name() << "=" << ait->value();
+            cout << "Node " << ait->value();
+            
+        }
+
+        xml_node node = it->child("coordinates");
+
+        for (xml_node_iterator ait = node.begin(); ait != node.end(); ++ait)
+        {
+            
+            cout << " " << ait->child_value();
         }
 
         cout << endl;
