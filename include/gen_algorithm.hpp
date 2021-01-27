@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include "individual.hpp"
+#include "Chromosome.hpp"
 
 class gen_algorithm {
 private:
@@ -17,7 +18,7 @@ private:
     individual l_best_so_far;
     individual r_best_so_far;
     individual best_so_far;
-    std::vector<individual> population;
+    std::vector<Chromosome> population;
 
     void cross();
     void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<unsigned>> &vec, bool isNotSingle);
@@ -25,6 +26,7 @@ private:
     unsigned generate_number();
     void gen_function();
     void fintess_calc();
+    void fintess_calc2();
     void selection();
     void initPopulation();
     void prepare_next_gen();
