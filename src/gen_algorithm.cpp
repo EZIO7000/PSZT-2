@@ -13,6 +13,7 @@ gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_proba
     parm_t = t;
     lengthOfVector = 66; //length_of_vector;
     iteration_count = iter_count;
+    load_data();
 }
 
 /*
@@ -221,6 +222,42 @@ void gen_algorithm::initPopulation()
     }
 }
 
+void gen_algorithm::init_population_chromosome(unsigned path_count) {
+    
+    for (unsigned i = 0; i < population_size; i++) {
+        
+        std::vector<individual> temp;
+
+        for(unsigned j = 0; j < 66; ++j) {
+
+            std::vector<unsigned> tmp, tmp2;
+
+            tmp.push_back(0);
+
+            for(unsigned a = 1; a < path_count; a++) {
+                
+                tmp.push_back(generate_number() % 101);
+            }
+
+            tmp.push_back(100);
+        
+            std::sort(tmp.begin(), tmp.end());
+
+            for(unsigned a = 0; a < path_count; a++) {
+                tmp2[a] = tmp[a+1] - tmp[a];
+            }
+
+            individual ind;
+            ind.set_gene(tmp2);
+            temp.push_back(ind);
+        }
+
+        Chromosome ch;
+        ch.set_chromosome(temp);
+        population_chromosome.push_back(ch);
+    }
+}
+
 unsigned gen_algorithm::generate_number()
 {
 
@@ -368,7 +405,6 @@ individual gen_algorithm::start() {
     fintess_calc();
     for (unsigned i = 0; i < iteration_count; ++i)
     {
-        //load_data();
         selection();
         crossChromosome();
         mutate();

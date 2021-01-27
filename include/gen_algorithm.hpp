@@ -7,6 +7,7 @@
 #include "individual.hpp"
 #include "Chromosome.hpp"
 #include "pugixml.hpp"
+#include <set>
 //
 class gen_algorithm {
 private:
@@ -34,6 +35,7 @@ private:
     void fintess_calc2(unsigned path_count, unsigned modularity);
     void selection();
     void initPopulation();
+    void init_population_chromosome(unsigned path_count);
     void prepare_next_gen();
     void selection_tournament();
     void mutate_long();

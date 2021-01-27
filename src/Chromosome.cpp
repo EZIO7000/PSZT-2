@@ -2,13 +2,7 @@
 
 
 Chromosome::Chromosome() {
-
-    fitness = 0;
-    for(int i = 0; i < 66; i++)
-    {
-        individual ind;
-        chromosome.push_back(ind);
-    }
+    
 }
 
 Chromosome::~Chromosome() {
