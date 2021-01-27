@@ -26,11 +26,11 @@ private:
     std::vector<unsigned> demands;
     unsigned edges[18][18];
 
-    void crossChromosome();
+    std::vector<Chromosome> crossChromosome(std::vector<Chromosome> pop);
     void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<individual>> &vec, bool isNotSingle);
     void mutate();
-    void mutateChromosomes();
-    void mutateChromosomesOnePath();
+    std::vector<Chromosome> mutateChromosomes(std::vector<Chromosome> pop);
+    std::vector<Chromosome> mutateChromosomesOnePath(std::vector<Chromosome> pop);
     unsigned generate_number();
     void gen_function();
     void fintess_calc();

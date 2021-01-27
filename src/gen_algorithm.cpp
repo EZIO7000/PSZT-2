@@ -79,20 +79,20 @@ void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, 
 *   sie z elementami z grupy drugiej. Z dwoch rodzicow powstaje dwojka dzieci. 
 */
 
-void gen_algorithm::crossChromosome()
+std::vector<Chromosome> gen_algorithm::crossChromosome(std::vector<Chromosome> pop)
 {
     std::vector<std::vector<individual>> vec;
-    vec.reserve(population_chromosome.size());
+    vec.reserve(pop.size());
 
     std::vector<int> first_half;
     std::vector<int> second_half;
 
-    first_half.reserve(population_chromosome.size() / 2 + 1);
-    second_half.reserve(population_chromosome.size() / 2);
+    first_half.reserve(pop.size() / 2 + 1);
+    second_half.reserve(pop.size() / 2);
 
     bool first = true;
 
-    for (unsigned i = 0; i < population_chromosome.size(); i++)
+    for (unsigned i = 0; i < pop.size(); i++)
     {
         if (generate_number() % 100 < cross_probability)
         {
@@ -109,16 +109,16 @@ void gen_algorithm::crossChromosome()
         }
         else
         {
-            vec.push_back(population_chromosome[i].get_chromosome());
+            vec.push_back(pop[i].get_chromosome());
         }
     }
 
     if (second_half.size() == 0)                            // gdy prawdopodobienstwo jest tak male, ze zostal wylosowany tylko jeden osobnik do 
     {                                                       // skrzyzowania, jest on skrzyzowany z losowym innym osobnikiem, natomiast ten drugi
-        int i = generate_number() % population_chromosome.size();      // nie zostaje nadpisany przez dziecko
+        int i = generate_number() % pop.size();      // nie zostaje nadpisany przez dziecko
         while (i == 0)
         {
-            i = generate_number() % population_chromosome.size();
+            i = generate_number() % pop.size();
         }
         crossMethod(generate_number() % 2, first_half[0], i, vec, false);
     }
@@ -128,10 +128,10 @@ void gen_algorithm::crossChromosome()
         {
             if (second_half.size() == 0)
             {
-                int i = generate_number() % population_chromosome.size();
+                int i = generate_number() % pop.size();
                 while (i == first_half[0])  
                 {
-                    i = generate_number() % population_chromosome.size();
+                    i = generate_number() % pop.size();
                 }
                 crossMethod(generate_number() % 2, first_half[0], i, vec, false);
             }
@@ -148,8 +148,10 @@ void gen_algorithm::crossChromosome()
 
     for (unsigned i = 0; i < vec.size(); i++)
     {
-        population_chromosome[i].set_chromosome(vec[i]);
+        pop[i].set_chromosome(vec[i]);
     }
+
+    return pop;
 }
 /*
 *   pierwsza wersja mutacji. Przechodzi po kazdym bicie kazdego elementu i wylicza prawdopodobienstwo
@@ -203,21 +205,21 @@ void gen_algorithm::mutate()
     }
 }
 
-void gen_algorithm::mutateChromosomes()
+std::vector<Chromosome> gen_algorithm::mutateChromosomes(std::vector<Chromosome> pop)
 {
-    long int numberOfAllElements = population_chromosome.size() * population_chromosome[0].get_chromosome().size(); //*
+    long int numberOfAllElements = pop.size() * pop[0].get_chromosome().size(); //*
                                      //population_chromosome[0].get_chromosome()[0].get_gene().size();
 
     long int numberOfElementsToMutate = numberOfAllElements * mutation_probability / 1000;
 
     for(long int i = 0; i < numberOfElementsToMutate; i++)
     {
-        int x = generate_number() % population_chromosome.size();
-        int y = generate_number() % population_chromosome[0].get_chromosome().size();
+        int x = generate_number() % pop.size();
+        int y = generate_number() % pop[0].get_chromosome().size();
 
-        std::vector<unsigned> tmpVec = population_chromosome[x].get_chromosome()[y].get_gene();
+        std::vector<unsigned> tmpVec = pop[x].get_chromosome()[y].get_gene();
 
-        int paths = population_chromosome[x].get_chromosome()[y].get_gene().size();
+        int paths = pop[x].get_chromosome()[y].get_gene().size();
         int sum = 0;
 
         std::vector<int> tmp;
@@ -236,33 +238,36 @@ void gen_algorithm::mutateChromosomes()
             tmpVec[a] = tmp[a+1] - tmp[a];
         }
 
-        population_chromosome[x].set_gene(y, tmpVec);
+        pop[x].set_gene(y, tmpVec);
     }
+
+    return pop;
 }
 
-void gen_algorithm::mutateChromosomesOnePath()
+std::vector<Chromosome> gen_algorithm::mutateChromosomesOnePath(std::vector<Chromosome> pop)
 {
-    long int numberOfAllElements = population_chromosome.size() * population_chromosome[0].get_chromosome().size(); //*
+    long int numberOfAllElements = pop.size() * pop[0].get_chromosome().size(); //*
                                      //population_chromosome[0].get_chromosome()[0].get_gene().size();
 
     long int numberOfElementsToMutate = numberOfAllElements * mutation_probability / 1000;
 
     for(long int i = 0; i < numberOfElementsToMutate; i++)
     {
-        int x = generate_number() % population_chromosome.size();
-        int y = generate_number() % population_chromosome[0].get_chromosome().size();
+        int x = generate_number() % pop.size();
+        int y = generate_number() % pop[0].get_chromosome().size();
 
-        std::vector<unsigned> tmpVec = population_chromosome[x].get_chromosome()[y].get_gene();
+        std::vector<unsigned> tmpVec = pop[x].get_chromosome()[y].get_gene();
 
-        int paths = population_chromosome[x].get_chromosome()[y].get_gene().size();
+        int paths = pop[x].get_chromosome()[y].get_gene().size();
         for(int a = 0; a < paths; a++)
         {
             tmpVec[a] = 0;
         }
         tmpVec[generate_number() % paths] = 1;
-        population_chromosome[x].set_gene(y, tmpVec);
+        pop[x].set_gene(y, tmpVec);
 
     }
+    return pop;
 }
 
 void gen_algorithm::gen_function()
@@ -499,9 +504,9 @@ individual gen_algorithm::start() {
     fintess_calc_chromosome(6, 10, population_chromosome);
     for (unsigned i = 0; i < iteration_count; ++i)
     {
-        selection_tournament_chromosome(population_chromosome);
-        crossChromosome();
-        mutateChromosomes();
+        std::vector<Chromosome> new_population = selection_tournament_chromosome(population_chromosome);
+        new_population = crossChromosome(new_population);
+        new_population = mutateChromosomes(new_population);
         fintess_calc_chromosome();
         succession();
         //std::cout << "lewy: " << l_best_so_far;
