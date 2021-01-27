@@ -37,7 +37,6 @@ int main() {
         // do uzupelnienia tablicy demands
         cout << " " << it->child("demandValue").child_value();
 
-        //cout << "      " << it->child("admissiblePaths");
         xml_node path = it->child("admissiblePaths");
 
         //xml_node_iterator path_it = it->child("admissiblePaths");
@@ -45,9 +44,9 @@ int main() {
 
         for (xml_node_iterator pit = path.begin(); pit != path.end(); ++pit)
         {
-            xml_node link = pit->child("admissiblePath");
+            //xml_node link = pit->child("admissiblePath");
 
-            for(xml_node_iterator lit = link.begin(); lit != link.end(); ++lit)
+            for(xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit)
             {
                 cout << " " << lit->child_value();   
             }

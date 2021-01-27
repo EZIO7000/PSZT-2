@@ -42,6 +42,12 @@ std::vector<individual> const & Chromosome::get_chromosome() const {
     return this->chromosome;
 }
 
+// std::vector<unsigned> const & Chromosome::get_gene(int i) const{
+
+//     return this->chromosome[i];
+
+// }
+
 unsigned Chromosome::get_fitness() const {
 
     return this->fitness;
