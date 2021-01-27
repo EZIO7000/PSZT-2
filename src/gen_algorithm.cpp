@@ -425,8 +425,6 @@ void gen_algorithm::load_data() {
 
 void gen_algorithm::show_edges()
 {
-    // Chromosome best_so_far;
-    // unsigned best_edges[12][12];
     std::cout << "\x1B[2J\x1B[H";
     std::cout << "Krakow - Warsaw:       " << (unsigned)std::ceil((double)best_edges[4][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[4][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
     std::cout << "Krakow - Rzeszow:      " << (unsigned)std::ceil((double)best_edges[4][8] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[4][8]%(modularity * 100)/100)) << "/" << modularity << std::endl;
