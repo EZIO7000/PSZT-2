@@ -328,11 +328,11 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
-void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity) {
+void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity, std::vector<Chromosome> p) {
     
     unsigned module_count;
 
-    for(auto &ch : population_chromosome) {
+    for(auto &ch : p) {
 
         module_count = 0;
 
@@ -461,7 +461,7 @@ void gen_algorithm::selection_tournament() {
         population.push_back(i);    // ładujemy nową populację.                              
 }
 
-std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome() {
+std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome(std::vector<Chromosome> p) {
 
     std::vector<Chromosome> temp;
 
@@ -470,39 +470,40 @@ std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome() {
         unsigned temp1 = generate_number() % population_size; //
         unsigned temp2 = generate_number() % population_size; // losujemy 2 osobników z populacji.
 
-        if( population_chromosome[temp1] < population_chromosome[temp2] ) // 
-            temp.push_back(population_chromosome[temp2]);      //
+        if( p[temp1] < p[temp2] ) // 
+            temp.push_back(p[temp2]);      //
         else                                        //
-            temp.push_back(population_chromosome[temp1]);      // wybieramy lepszego.
+            temp.push_back(p[temp1]);      // wybieramy lepszego.
     }
 
     return temp;                            
 }
 
-void gen_algorithm::succession(std::vector<Chromosome> Ot, unsigned k) {
+void gen_algorithm::succession(std::vector<Chromosome> p, unsigned k) {
 
     std::sort(population_chromosome.begin(), population_chromosome.end());
-    std::sort(Ot.begin(), Ot.end());
-    std::reverse(Ot.begin(), Ot.end());
+    std::sort(p.begin(), p.end());
+    std::reverse(p.begin(), p.end());
 
     for(int i = 0; i < population_size - k; ++i) {
 
         population_chromosome.pop_back();
-        population_chromosome.push_back(Ot.back());
-        Ot.pop_back();
+        population_chromosome.push_back(p.back());
+        p.pop_back();
     }
 }
 
 individual gen_algorithm::start() {
 
-    initPopulation();
-    fintess_calc();
+    init_population_chromosome(6);
+    fintess_calc_chromosome(6, 10, population_chromosome);
     for (unsigned i = 0; i < iteration_count; ++i)
     {
-        selection();
+        selection_tournament_chromosome(population_chromosome);
         crossChromosome();
-        mutate();
-        fintess_calc();
+        mutateChromosomes();
+        fintess_calc_chromosome();
+        succession();
         //std::cout << "lewy: " << l_best_so_far;
         //std::cout << "prawy: " << r_best_so_far;
         //std::cout << best_so_far;
