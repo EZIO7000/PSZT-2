@@ -229,30 +229,29 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
-void gen_algorithm::fintess_calc2() {
-
-    unsigned edges[18][18];
-    unsigned demands[12][12];
-    unsigned path_sum[6];
-    unsigned paths[12][12][6];
-
-    for(auto &s : path_sum)
-        s = 0;
+void gen_algorithm::fintess_calc2(unsigned path_count, unsigned modularity) {
     
-    for (auto &ch : population_chromosome) {
+    unsigned module_count;
 
-        for (int i = 0; i < 18; i++)
-            for (int j = 0; j < 18; j++)
+    for(auto &ch : population_chromosome) {
+
+        module_count = 0;
+
+        for(int i = 0; i < 18; i++)
+            for(int j = 0; j < 18; j++)
                 edges[i][j] = 0;
 
-        for (int i = 0; i < 18; i++)
-            for (int j = 0; j < 18; j++) {
+        for(int i = 0; i < 66; i++)
+            for(int j = 0; j < path_count; j++)
+                for(auto &link : demand_paths[i][j])
+                    edges[link[0]][link[1]] += ch.get_chromosome()[i].get_gene()[j] * demands[i];
         
-                path_sum[i] += ch.get_chromosome()[i].get_gene()[j];
-            }
+        for(int i = 0; i < 18; i++)
+            for(int j = 0; j < 18; j++)
+                module_count += (int)std::ceil((double)edges[i][j] / (modularity * 100));
+
+        ch.set_fitness(module_count);
     }
-
-
 }
 
 void gen_algorithm::fintess_calc() {
@@ -369,6 +368,7 @@ individual gen_algorithm::start() {
     fintess_calc();
     for (unsigned i = 0; i < iteration_count; ++i)
     {
+        //load_data();
         selection();
         crossChromosome();
         mutate();
@@ -378,4 +378,75 @@ individual gen_algorithm::start() {
         //std::cout << best_so_far;
     }
     return best_so_far;
+}
+
+void gen_algorithm::load_data() {
+
+    pugi::xml_document doc;
+    pugi::xml_node tools = doc.child("network").child("demands");
+    int element_counter = 0;
+    int path_counter = 0;
+    int link_counter = 0;
+
+    for (pugi::xml_node_iterator it = tools.begin(); it != tools.end(); ++it) {
+        
+        demands.push_back(std::stoi(it->child("demandValue").child_value()));
+        pugi::xml_node path = it->child("admissiblePaths");
+        std::vector<std::vector<std::vector<unsigned>>> tmp_path;
+
+        for (pugi::xml_node_iterator pit = path.begin(); pit != path.end(); ++pit) {
+            
+            std::vector<std::vector<unsigned>> tmp_links;
+
+            for(pugi::xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit) {
+
+                unsigned a;
+                unsigned b;
+                bool pierwsze = true;
+                std::string a_char;
+                std::string b_char;
+                int pomin = 5;
+                std::string tmp_string = lit->child_value();
+
+                for(auto &it : tmp_string) {
+                    
+                    if(pomin <= 0) {
+                        
+                        if(it == '_')
+                            pierwsze = false;
+
+                        if(it != '_') {
+                            
+                            if(pierwsze)
+                                a_char += it;
+                            
+                            else
+                                b_char += it;
+                        }
+                    }
+                    pomin--;
+                }
+
+                a = std::stoi(a_char);
+                b = std::stoi(b_char);
+                std::vector<unsigned> tmp_link;
+
+                if(a < b) {
+                    
+                    tmp_link.push_back(a);
+                    tmp_link.push_back(b);
+                }
+
+                else {
+                    
+                    tmp_link.push_back(b);
+                    tmp_link.push_back(a);
+                }
+
+                tmp_links.push_back(tmp_link);
+            }
+            tmp_path.push_back(tmp_links);
+        }
+        demand_paths.push_back(tmp_path);
+    }
 }

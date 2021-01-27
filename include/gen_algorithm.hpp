@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "individual.hpp"
 #include "Chromosome.hpp"
+#include "pugixml.hpp"
 //
 class gen_algorithm {
 private:
@@ -20,6 +21,9 @@ private:
     individual best_so_far;
     std::vector<individual> population;
     std::vector<Chromosome> population_chromosome;
+    std::vector<std::vector<std::vector<std::vector<unsigned>>>> demand_paths;
+    std::vector<unsigned> demands;
+    unsigned edges[18][18];
 
     void crossChromosome();
     void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<individual>> &vec, bool isNotSingle);
@@ -27,12 +31,13 @@ private:
     unsigned generate_number();
     void gen_function();
     void fintess_calc();
-    void fintess_calc2();
+    void fintess_calc2(unsigned path_count, unsigned modularity);
     void selection();
     void initPopulation();
     void prepare_next_gen();
     void selection_tournament();
     void mutate_long();
+    void load_data();
 
 public:
 
