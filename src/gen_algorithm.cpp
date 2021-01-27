@@ -342,7 +342,7 @@ individual gen_algorithm::start() {
         fintess_calc_chromosome(6, modularity, new_population);
         succession_chromosome(new_population, 100);
         show_edges();
-        std::cout << i << std::endl;
+        std::cout << "Numer populacji: " << i << std::endl;
     }
     //return best_so_far;
 }
@@ -424,23 +424,23 @@ void gen_algorithm::show_edges()
     // Chromosome best_so_far;
     // unsigned best_edges[12][12];
     std::cout << "\x1B[2J\x1B[H";
-    std::cout << "Krakow - Warsaw:       " << best_edges[4][10]/(modularity * 100) << "  " << best_edges[4][10]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Krakow - Rzeszow:      " << best_edges[4][8]/(modularity * 100) << "  " << best_edges[4][8]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Bialystok - Rzeszow:   " << best_edges[5][8]/(modularity * 100) << "  " << best_edges[5][8]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Gdansk - Bialystok:    " << best_edges[0][5]/(modularity * 100) << "  " << best_edges[0][5]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Gdansk - Kolobrzeg:    " << best_edges[0][2]/(modularity * 100) << "  " << best_edges[0][2]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Kolobrzeg - Szczecin:  " << best_edges[2][9]/(modularity * 100) << "  " << best_edges[2][9]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Poznan - Szczecin:     " << best_edges[7][9]/(modularity * 100) << "  " << best_edges[7][9]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Poznan - Wroclaw:      " << best_edges[7][11]/(modularity * 100) << "  " << best_edges[7][11]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Lodz - Warsaw:         " << best_edges[6][10]/(modularity * 100) << "  " << best_edges[6][10]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Katowice - Lodz:       " << best_edges[3][6]/(modularity * 100) << "  " << best_edges[3][6]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Katowice - Wroclaw:    " << best_edges[3][11]/(modularity * 100) << "  " << best_edges[3][11]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Bydgoszcz - Warsaw:    " << best_edges[1][10]/(modularity * 100) << "  " << best_edges[1][10]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Bydgoszcz - Poznan:    " << best_edges[1][7]/(modularity * 100) << "  " << best_edges[1][7]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Katowice - Krakow:     " << best_edges[3][4]/(modularity * 100) << "  " << best_edges[3][4]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Lodz - Wroclaw:        " << best_edges[6][11]/(modularity * 100) << "  " << best_edges[6][11]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Bialystok - Warsaw:    " << best_edges[5][10]/(modularity * 100) << "  " << best_edges[5][10]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Gdansk - Warsaw:       " << best_edges[0][10]/(modularity * 100) << "  " << best_edges[0][10]%(modularity) << "/" << modularity << std::endl;
-    std::cout << "Bydgoszcz - Kolobrzeg: " << best_edges[1][2]/(modularity * 100) << "  " << best_edges[1][2]%(modularity) << "/" << modularity << std::endl;
+    std::cout << "Krakow - Warsaw:       " << (unsigned)std::ceil((double)best_edges[4][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[4][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Krakow - Rzeszow:      " << (unsigned)std::ceil((double)best_edges[4][8] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[4][8]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Bialystok - Rzeszow:   " << (unsigned)std::ceil((double)best_edges[5][8] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[5][8]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Gdansk - Bialystok:    " << (unsigned)std::ceil((double)best_edges[0][5] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[0][5]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Gdansk - Kolobrzeg:    " << (unsigned)std::ceil((double)best_edges[0][2] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[0][2]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Kolobrzeg - Szczecin:  " << (unsigned)std::ceil((double)best_edges[2][9] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[2][9]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Poznan - Szczecin:     " << (unsigned)std::ceil((double)best_edges[7][9] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[7][9]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Poznan - Wroclaw:      " << (unsigned)std::ceil((double)best_edges[7][11] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[7][11]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Lodz - Warsaw:         " << (unsigned)std::ceil((double)best_edges[6][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[6][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Katowice - Lodz:       " << (unsigned)std::ceil((double)best_edges[3][6] / (modularity * 100))<< "  " << (unsigned)std::ceil((double)(best_edges[3][6]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Katowice - Wroclaw:    " << (unsigned)std::ceil((double)best_edges[3][11] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[3][11]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Bydgoszcz - Warsaw:    " << (unsigned)std::ceil((double)best_edges[1][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[1][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Bydgoszcz - Poznan:    " << (unsigned)std::ceil((double)best_edges[1][7] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[1][7]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Katowice - Krakow:     " << (unsigned)std::ceil((double)best_edges[3][4] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[3][4]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Lodz - Wroclaw:        " << (unsigned)std::ceil((double)best_edges[6][11] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[6][11]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Bialystok - Warsaw:    " << (unsigned)std::ceil((double)best_edges[5][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[5][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Gdansk - Warsaw:       " << (unsigned)std::ceil((double)best_edges[0][10] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[0][10]%(modularity * 100)/100)) << "/" << modularity << std::endl;
+    std::cout << "Bydgoszcz - Kolobrzeg: " << (unsigned)std::ceil((double)best_edges[1][2] / (modularity * 100)) << "  " << (unsigned)std::ceil((double)(best_edges[1][2]%(modularity * 100)/100)) << "/" << modularity << std::endl;
     std::cout << "Najlepszy wynik:       " << best_so_far.get_fitness() << std::endl;
 }
