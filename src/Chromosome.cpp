@@ -3,6 +3,7 @@
 
 Chromosome::Chromosome() {
     
+    fitness = std::numeric_limits<unsigned>::max();
 }
 
 Chromosome::~Chromosome() {
@@ -28,7 +29,7 @@ Chromosome & Chromosome::operator=(const Chromosome & other) {
 
 bool Chromosome::operator< ( Chromosome const & other) const {
 
-    return this->fitness < other.fitness;
+    return this->fitness > other.fitness;
 }
 
 std::vector<individual> const & Chromosome::get_chromosome() const {
