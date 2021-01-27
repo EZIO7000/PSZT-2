@@ -510,6 +510,7 @@ individual gen_algorithm::start() {
         new_population = mutateChromosomes(new_population);
         fintess_calc_chromosome(6, 10, new_population);
         succession(new_population, 100);
+        std::cout << i << std::endl;
         //std::cout << "lewy: " << l_best_so_far;
         //std::cout << "prawy: " << r_best_so_far;
         //std::cout << best_so_far;
@@ -520,6 +521,7 @@ individual gen_algorithm::start() {
 void gen_algorithm::load_data() {
 
     pugi::xml_document doc;
+    doc.load_file("bin/test.xml");
     pugi::xml_node tools = doc.child("network").child("demands");
     int element_counter = 0;
     int path_counter = 0;
