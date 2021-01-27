@@ -11,7 +11,7 @@ gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_proba
     mutation_probability = m_probability;
     cross_probability = c_probability;
     parm_t = t;
-    lengthOfVector = length_of_vector;
+    lengthOfVector = 66; //length_of_vector;
     iteration_count = iter_count;
 }
 
@@ -71,6 +71,61 @@ void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, 
     if (isNotSingle)
         vec.push_back(tmp2);
 }
+
+void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, int crossed_element_numberP, std::vector<std::vector<individual>> &vec, bool isNotSingle)
+{
+    int a = generate_number() % lengthOfVector;
+
+    std::vector<individual> tmp;
+    tmp.reserve(lengthOfVector);
+    std::vector<individual> tmp2;
+    tmp2.reserve(lengthOfVector);
+    std::vector<individual> changed_element_number = population_chromosome[changed_element_numberP].get_chromosome();
+    std::vector<individual> crossed_element_number = population_chromosome[crossed_element_numberP].get_chromosome();
+
+    switch (method_number)
+    {
+    case 0: // Ab
+
+        for (int i = 0; i < a; i++)
+        {
+            tmp.push_back(crossed_element_number[i]);
+            if (isNotSingle)
+                tmp2.push_back(crossed_element_number[i]);
+        }
+        for (unsigned i = a; i < lengthOfVector; i++)
+        {
+            tmp.push_back(changed_element_number[i]);
+            if (isNotSingle)
+                tmp2.push_back(changed_element_number[i]);
+        }
+        break;
+
+    case 1: // aB
+
+        for (int i = 0; i < a; i++)
+        {
+            tmp.push_back(changed_element_number[i]);
+            if (isNotSingle)
+                tmp2.push_back(changed_element_number[i]);
+        }
+        for (unsigned i = a; i < lengthOfVector; i++)
+        {
+            tmp.push_back(crossed_element_number[i]);
+            if (isNotSingle)
+                tmp2.push_back(crossed_element_number[i]);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    vec.push_back(tmp);
+    if (isNotSingle)
+        vec.push_back(tmp2);
+}
+
 
 /*
 *   Krzyzowanie jendopunktowe. Na podstawie prawdopodobienstwa tworzone sa 2 grupy, nastepnie elementy z grupy pierwszej lacza
@@ -146,6 +201,79 @@ void gen_algorithm::cross()
     for (unsigned i = 0; i < vec.size(); i++)
     {
         population[i].set_gene(vec[i]);
+    }
+}
+
+void gen_algorithm::crossChromosome()
+{
+    std::vector<std::vector<individual>> vec;
+    vec.reserve(population.size());
+
+    std::vector<int> first_half;
+    std::vector<int> second_half;
+
+    first_half.reserve(population_chromosome.size() / 2 + 1);
+    second_half.reserve(population_chromosome.size() / 2);
+
+    bool first = true;
+
+    for (unsigned i = 0; i < population_chromosome.size(); i++)
+    {
+        if (generate_number() % 100 < cross_probability)
+        {
+            if (first)
+            {
+                first_half.push_back(i);
+                first = false;
+            }
+            else
+            {
+                second_half.push_back(i);
+                first = true;
+            }
+        }
+        else
+        {
+            vec.push_back(population_chromosome[i].get_chromosome());
+        }
+    }
+
+    if (second_half.size() == 0)                            // gdy prawdopodobienstwo jest tak male, ze zostal wylosowany tylko jeden osobnik do 
+    {                                                       // skrzyzowania, jest on skrzyzowany z losowym innym osobnikiem, natomiast ten drugi
+        int i = generate_number() % population_chromosome.size();      // nie zostaje nadpisany przez dziecko
+        while (i == 0)
+        {
+            i = generate_number() % population_chromosome.size();
+        }
+        crossMethod(generate_number() % 2, first_half[0], i, vec, false);
+    }
+    else
+    {
+        for (unsigned i = 0; i < first_half.size(); i++)
+        {
+            if (second_half.size() == 0)
+            {
+                int i = generate_number() % population_chromosome.size();
+                while (i == first_half[0])  
+                {
+                    i = generate_number() % population_chromosome.size();
+                }
+                crossMethod(generate_number() % 2, first_half[0], i, vec, false);
+            }
+            else
+            {
+                unsigned x = generate_number() % second_half.size();
+
+                crossMethod(generate_number() % 2, first_half[i], second_half[x], vec, true);
+
+                second_half.erase(second_half.begin() + x);
+            }
+        }
+    }
+
+    for (unsigned i = 0; i < vec.size(); i++)
+    {
+        population_chromosome[i].set_chromosome(vec[i]);
     }
 }
 /*
