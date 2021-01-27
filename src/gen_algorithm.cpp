@@ -399,7 +399,7 @@ void gen_algorithm::selection_tournament() {
         population.push_back(i);    // ładujemy nową populację.                              
 }
 
-void gen_algorithm::selection_tournament_chromosome() {
+std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome() {
 
     std::vector<Chromosome> temp;
 
@@ -414,10 +414,21 @@ void gen_algorithm::selection_tournament_chromosome() {
             temp.push_back(population_chromosome[temp1]);      // wybieramy lepszego.
     }
 
-    population_chromosome.clear(); // czyścimy dotychczasową populację.
+    return temp;                            
+}
 
-    for( auto & i : temp )          //
-        population_chromosome.push_back(i);    // ładujemy nową populację.                              
+void gen_algorithm::succession(std::vector<Chromosome> Ot, unsigned k) {
+
+    std::sort(population_chromosome.begin(), population_chromosome.end());
+    std::sort(Ot.begin(), Ot.end());
+    std::reverse(Ot.begin(), Ot.end());
+
+    for(int i = 0; i < population_size - k; ++i) {
+
+        population_chromosome.pop_back();
+        population_chromosome.push_back(Ot.back());
+        Ot.pop_back();
+    }
 }
 
 individual gen_algorithm::start() {

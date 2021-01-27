@@ -38,7 +38,8 @@ private:
     void init_population_chromosome(unsigned path_count);
     void prepare_next_gen();
     void selection_tournament();
-    void selection_tournament_chromosome();
+    std::vector<Chromosome> selection_tournament_chromosome();
+    void succession(std::vector<Chromosome> Ot, unsigned k);
     void mutate_long();
     void load_data();
 
