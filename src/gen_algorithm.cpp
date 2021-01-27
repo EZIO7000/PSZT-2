@@ -299,6 +299,7 @@ void gen_algorithm::init_population_chromosome(unsigned path_count) {
 
             std::vector<unsigned> tmp, tmp2;
 
+            tmp2.resize(path_count);
             tmp.push_back(0);
 
             for(unsigned a = 1; a < path_count; a++) {
@@ -507,8 +508,8 @@ individual gen_algorithm::start() {
         std::vector<Chromosome> new_population = selection_tournament_chromosome(population_chromosome);
         new_population = crossChromosome(new_population);
         new_population = mutateChromosomes(new_population);
-        fintess_calc_chromosome();
-        succession();
+        fintess_calc_chromosome(6, 10, new_population);
+        succession(new_population, 100);
         //std::cout << "lewy: " << l_best_so_far;
         //std::cout << "prawy: " << r_best_so_far;
         //std::cout << best_so_far;
