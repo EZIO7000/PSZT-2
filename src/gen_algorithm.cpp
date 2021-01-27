@@ -153,57 +153,6 @@ std::vector<Chromosome> gen_algorithm::crossChromosome(std::vector<Chromosome> p
 
     return pop;
 }
-/*
-*   pierwsza wersja mutacji. Przechodzi po kazdym bicie kazdego elementu i wylicza prawdopodobienstwo
-*/
-void gen_algorithm::mutate_long()
-{
-    for(unsigned i = 0; i < population.size(); i++)
-    {
-        std::vector<unsigned> tmp = population[i].get_gene();
-        for (unsigned x = 0; x < lengthOfVector; x++)
-        {
-            if (generate_number() % 100 < mutation_probability)
-            {
-                tmp[x] = (tmp[x] + 1) % 2;
-            }
-        }
-        population[i].set_gene(tmp);
-    }
-}
-
-void gen_algorithm::mutate()
-{
-    int numberOfElementsToChange = mutation_probability * lengthOfVector * population.size() / 1000;    // liczenie ilosci bitow do zmiany
-    std::vector<std::vector<bool>> tmpCheckVec;
-    std::vector<bool> tmpCheck;
-
-    for (unsigned i = 0; i < population_size; i++)      // tworzenie tablicy przechowywującej zmnienione bity
-    {
-        for (unsigned j = 0; j < lengthOfVector; j++)
-        {
-            tmpCheck.push_back(false);
-        }
-        tmpCheckVec.push_back(tmpCheck);
-    }
-
-    for (int i = 0; i < numberOfElementsToChange; i++)      // zmiana kolejnych bitow
-    {
-        int x = generate_number() % population.size();
-        int y = generate_number() % lengthOfVector;
-
-        while (tmpCheckVec[x][y] == true)                   // sprawdzenie czy bit zostal juz zmieniony i ewentualne wylosowanie nowego
-        {
-            x = generate_number() % population.size();
-            y = generate_number() % lengthOfVector;
-        }
-        tmpCheckVec[x][y] = true;
-
-        std::vector<unsigned> tmpVec = population[x].get_gene();
-        tmpVec[y] = (tmpVec[y] + 1) % 2;
-        population[x].set_gene(tmpVec);
-    }
-}
 
 std::vector<Chromosome> gen_algorithm::mutateChromosomes(std::vector<Chromosome> pop)
 {
@@ -270,25 +219,6 @@ std::vector<Chromosome> gen_algorithm::mutateChromosomesOnePath(std::vector<Chro
     return pop;
 }
 
-void gen_algorithm::gen_function()
-{
-}
-
-void gen_algorithm::initPopulation()
-{
-    for (unsigned i = 0; i < population_size; i++)
-    {
-        std::vector<unsigned> tmp;
-        for (unsigned x = 0; x < lengthOfVector; x++)
-        {
-            tmp.push_back(generate_number() % 2);
-        }
-        individual ind;
-        ind.set_gene(tmp);
-        population.push_back(ind);
-    }
-}
-
 void gen_algorithm::init_population_chromosome(unsigned path_count) {
     
     for (unsigned i = 0; i < population_size; i++) {
@@ -334,16 +264,17 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
-void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity, std::vector<Chromosome> p) {
+void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity, std::vector<Chromosome> &p) {
     
     unsigned module_count;
+    best_so_far = p[0];
 
     for(auto &ch : p) {
 
         module_count = 0;
 
-        for(int i = 0; i < 18; i++)
-            for(int j = 0; j < 18; j++)
+        for(int i = 0; i < 12; i++)
+            for(int j = 0; j < 12; j++)
                 edges[i][j] = 0;
 
         for(int i = 0; i < 66; i++)
@@ -351,120 +282,19 @@ void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modula
                 for(auto &link : demand_paths[i][j])
                     edges[link[0]][link[1]] += ch.get_chromosome()[i].get_gene()[j] * demands[i];
         
-        for(int i = 0; i < 18; i++)
-            for(int j = 0; j < 18; j++)
+        for(int i = 0; i < 12; i++)
+            for(int j = 0; j < 12; j++)
                 module_count += (int)std::ceil((double)edges[i][j] / (modularity * 100));
 
         ch.set_fitness(module_count);
-    }
-}
+        if(best_so_far.get_fitness() > ch.get_fitness()) {
 
-void gen_algorithm::fintess_calc() {
-
-    unsigned ones_score = 0;
-    unsigned zeros_score = 0;
-    unsigned score = 0;
-    std::vector<unsigned> a;
-
-    for (unsigned i = 0; i < lengthOfVector; ++i)
-        a.push_back(0);
-
-    l_best_so_far.set_fitness(0);
-    r_best_so_far.set_fitness(0);
-    l_best_so_far.set_gene(a);
-    r_best_so_far.set_gene(a);
-
-    for (auto &i : population) {
-
-        ones_score = 0;
-        zeros_score = 0;
-        score = 0;
-
-        for (auto x = i.get_gene().begin(); x != i.get_gene().end(); ++x) { //
-                                                                            //
-            if (*x == 0)                                                    //
-                break;                                                      //
-            else                                                            //
-                ++ones_score;                                               //
-        }                                                                   // zliczanie jedynek od początku genu.
-
-        for (auto j = i.get_gene().rbegin(); j != i.get_gene().rend(); ++j) {   //
-                                                                                //
-            if (*j == 1)                                                        //
-                break;                                                          //
-            else                                                                //
-                ++zeros_score;                                                  //
-        }                                                                       // zliczanie zer od końca genu.
-
-        if (zeros_score >= parm_t && ones_score >= parm_t)  //
-            score += 100;                                   // wartość super.
-
-        score += std::max(ones_score, zeros_score); // dodajemy maksymalną wartośc pochodzącą od zer lub jedynek.
-
-        i.set_fitness(score);   // ustawiamy funkcję celu dla danego osobnika.
-
-        if (l_best_so_far < i && ones_score > zeros_score)  //
-            l_best_so_far = i;                              //
-        if (r_best_so_far < i && zeros_score > ones_score)  //
-            r_best_so_far = i;                              //
-        if (best_so_far < i)                                //
-            best_so_far = i;                                // funkcje potrzebne do realizacji wyświetlania najlepszych osobników z zerami i jedynkami dla danej generacji.
-    }
-}
-
-void gen_algorithm::selection() {
-
-    long unsigned number;
-    long unsigned sum;
-    int count;
-    long unsigned fitness_sum = 0;
-    std::vector<individual> temp;
-
-    for (auto i : population)               //
-        fitness_sum += i.get_fitness();     // liczymy sumę wartości funkcji celu całej populacji.
-
-    for (unsigned x = 0; x < population_size; ++x) { // powtarzamy tyle razy ile wynosi wielkość populacji.
-
-        number = generate_number() % fitness_sum; // losujemy liczbę z przedziału < 0, suma funkcji celu >
-        sum = 0;
-        count = 0;
-
-        for (auto &i : population) { // iterujemy po elementach populacji
-        
-            if ((sum += i.get_fitness()) > number)  {//jeśli dotychczasowa suma funkcji celu jest większa niż zadana liczba
-    
-                temp.push_back(population[count]);  // wybierz osobnika
-                break;
-            }
-            count++;
+            best_so_far = ch;
+            for(int i = 0; i < 12; i++)
+                for(int j = 0; j < 12; j++)
+                    best_edges[i][j] = edges[i][j];
         }
     }
-
-    population.clear();
-
-    for (auto &i : temp)            //
-        population.push_back(i);    // ładujemy nową populację. 
-}
-
-void gen_algorithm::selection_tournament() {
-
-    std::vector<individual> temp;
-
-    for( unsigned x = 0; x < population_size; ++x ) { // powtarzamy tyle razy ile wynosi wielkość populacji.
-
-        unsigned temp1 = generate_number() % population_size; //
-        unsigned temp2 = generate_number() % population_size; // losujemy 2 osobników z populacji.
-
-        if( population[temp1] < population[temp2] ) // 
-            temp.push_back(population[temp2]);      //
-        else                                        //
-            temp.push_back(population[temp1]);      // wybieramy lepszego.
-    }
-
-    population.clear(); // czyścimy dotychczasową populację.
-
-    for( auto & i : temp )          //
-        population.push_back(i);    // ładujemy nową populację.                              
 }
 
 std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome(std::vector<Chromosome> p) {
@@ -485,7 +315,7 @@ std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome(std::vect
     return temp;                            
 }
 
-void gen_algorithm::succession(std::vector<Chromosome> p, unsigned k) {
+void gen_algorithm::succession_chromosome(std::vector<Chromosome> p, unsigned k) {
 
     std::sort(population_chromosome.begin(), population_chromosome.end());
     std::sort(p.begin(), p.end());
@@ -509,13 +339,10 @@ individual gen_algorithm::start() {
         new_population = crossChromosome(new_population);
         new_population = mutateChromosomes(new_population);
         fintess_calc_chromosome(6, 10, new_population);
-        succession(new_population, 100);
+        succession_chromosome(new_population, 100);
         std::cout << i << std::endl;
-        //std::cout << "lewy: " << l_best_so_far;
-        //std::cout << "prawy: " << r_best_so_far;
-        //std::cout << best_so_far;
     }
-    return best_so_far;
+    //return best_so_far;
 }
 
 void gen_algorithm::load_data() {
