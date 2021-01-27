@@ -13,6 +13,7 @@ gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_proba
     parm_t = t;
     lengthOfVector = 66; //length_of_vector;
     iteration_count = iter_count;
+    load_data();
 }
 
 /*
@@ -283,6 +284,42 @@ void gen_algorithm::initPopulation()
     }
 }
 
+void gen_algorithm::init_population_chromosome(unsigned path_count) {
+    
+    for (unsigned i = 0; i < population_size; i++) {
+        
+        std::vector<individual> temp;
+
+        for(unsigned j = 0; j < 66; ++j) {
+
+            std::vector<unsigned> tmp, tmp2;
+
+            tmp.push_back(0);
+
+            for(unsigned a = 1; a < path_count; a++) {
+                
+                tmp.push_back(generate_number() % 101);
+            }
+
+            tmp.push_back(100);
+        
+            std::sort(tmp.begin(), tmp.end());
+
+            for(unsigned a = 0; a < path_count; a++) {
+                tmp2[a] = tmp[a+1] - tmp[a];
+            }
+
+            individual ind;
+            ind.set_gene(tmp2);
+            temp.push_back(ind);
+        }
+
+        Chromosome ch;
+        ch.set_chromosome(temp);
+        population_chromosome.push_back(ch);
+    }
+}
+
 unsigned gen_algorithm::generate_number()
 {
 
@@ -291,30 +328,29 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
-void gen_algorithm::fintess_calc2() {
-
-    unsigned edges[18][18];
-    unsigned demands[12][12];
-    unsigned path_sum[6];
-    unsigned paths[12][12][6];
-
-    for(auto &s : path_sum)
-        s = 0;
+void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity) {
     
-    for (auto &ch : population_chromosome) {
+    unsigned module_count;
 
-        for (int i = 0; i < 18; i++)
-            for (int j = 0; j < 18; j++)
+    for(auto &ch : population_chromosome) {
+
+        module_count = 0;
+
+        for(int i = 0; i < 18; i++)
+            for(int j = 0; j < 18; j++)
                 edges[i][j] = 0;
 
-        for (int i = 0; i < 18; i++)
-            for (int j = 0; j < 18; j++) {
+        for(int i = 0; i < 66; i++)
+            for(int j = 0; j < path_count; j++)
+                for(auto &link : demand_paths[i][j])
+                    edges[link[0]][link[1]] += ch.get_chromosome()[i].get_gene()[j] * demands[i];
         
-                path_sum[i] += ch.get_chromosome()[i].get_gene()[j];
-            }
+        for(int i = 0; i < 18; i++)
+            for(int j = 0; j < 18; j++)
+                module_count += (int)std::ceil((double)edges[i][j] / (modularity * 100));
+
+        ch.set_fitness(module_count);
     }
-
-
 }
 
 void gen_algorithm::fintess_calc() {
@@ -425,6 +461,38 @@ void gen_algorithm::selection_tournament() {
         population.push_back(i);    // ładujemy nową populację.                              
 }
 
+std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome() {
+
+    std::vector<Chromosome> temp;
+
+    for(unsigned x = 0; x < population_size; ++x) { // powtarzamy tyle razy ile wynosi wielkość populacji.
+
+        unsigned temp1 = generate_number() % population_size; //
+        unsigned temp2 = generate_number() % population_size; // losujemy 2 osobników z populacji.
+
+        if( population_chromosome[temp1] < population_chromosome[temp2] ) // 
+            temp.push_back(population_chromosome[temp2]);      //
+        else                                        //
+            temp.push_back(population_chromosome[temp1]);      // wybieramy lepszego.
+    }
+
+    return temp;                            
+}
+
+void gen_algorithm::succession(std::vector<Chromosome> Ot, unsigned k) {
+
+    std::sort(population_chromosome.begin(), population_chromosome.end());
+    std::sort(Ot.begin(), Ot.end());
+    std::reverse(Ot.begin(), Ot.end());
+
+    for(int i = 0; i < population_size - k; ++i) {
+
+        population_chromosome.pop_back();
+        population_chromosome.push_back(Ot.back());
+        Ot.pop_back();
+    }
+}
+
 individual gen_algorithm::start() {
 
     initPopulation();
@@ -440,4 +508,75 @@ individual gen_algorithm::start() {
         //std::cout << best_so_far;
     }
     return best_so_far;
+}
+
+void gen_algorithm::load_data() {
+
+    pugi::xml_document doc;
+    pugi::xml_node tools = doc.child("network").child("demands");
+    int element_counter = 0;
+    int path_counter = 0;
+    int link_counter = 0;
+
+    for (pugi::xml_node_iterator it = tools.begin(); it != tools.end(); ++it) {
+        
+        demands.push_back(std::stoi(it->child("demandValue").child_value()));
+        pugi::xml_node path = it->child("admissiblePaths");
+        std::vector<std::vector<std::vector<unsigned>>> tmp_path;
+
+        for (pugi::xml_node_iterator pit = path.begin(); pit != path.end(); ++pit) {
+            
+            std::vector<std::vector<unsigned>> tmp_links;
+
+            for(pugi::xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit) {
+
+                unsigned a;
+                unsigned b;
+                bool pierwsze = true;
+                std::string a_char;
+                std::string b_char;
+                int pomin = 5;
+                std::string tmp_string = lit->child_value();
+
+                for(auto &it : tmp_string) {
+                    
+                    if(pomin <= 0) {
+                        
+                        if(it == '_')
+                            pierwsze = false;
+
+                        if(it != '_') {
+                            
+                            if(pierwsze)
+                                a_char += it;
+                            
+                            else
+                                b_char += it;
+                        }
+                    }
+                    pomin--;
+                }
+
+                a = std::stoi(a_char);
+                b = std::stoi(b_char);
+                std::vector<unsigned> tmp_link;
+
+                if(a < b) {
+                    
+                    tmp_link.push_back(a);
+                    tmp_link.push_back(b);
+                }
+
+                else {
+                    
+                    tmp_link.push_back(b);
+                    tmp_link.push_back(a);
+                }
+
+                tmp_links.push_back(tmp_link);
+            }
+            tmp_path.push_back(tmp_links);
+        }
+        demand_paths.push_back(tmp_path);
+    }
 }
