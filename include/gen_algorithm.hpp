@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "individual.hpp"
 #include "Chromosome.hpp"
-
+//
 class gen_algorithm {
 private:
     unsigned population_size;
@@ -29,6 +29,7 @@ private:
     unsigned generate_number();
     void gen_function();
     void fintess_calc();
+    void fintess_calc2();
     void selection();
     void initPopulation();
     void prepare_next_gen();

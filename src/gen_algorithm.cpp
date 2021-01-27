@@ -355,6 +355,32 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
+void gen_algorithm::fintess_calc2() {
+
+    unsigned edges[18][18];
+    unsigned demands[12][12];
+    unsigned path_sum[6];
+    unsigned paths[12][12][6];
+
+    for(auto &s : path_sum)
+        s = 0;
+    
+    for (auto &ch : population) {
+
+        for (int i = 0; i < 18; i++)
+            for (int j = 0; j < 18; j++)
+                edges[i][j] = 0;
+
+        for (int i = 0; i < 18; i++)
+            for (int j = 0; j < 18; j++) {
+        
+                path_sum[i] += ch.get_chromosome()[i].get_gene()[j];
+            }
+    }
+
+
+}
+
 void gen_algorithm::fintess_calc() {
 
     unsigned ones_score = 0;
