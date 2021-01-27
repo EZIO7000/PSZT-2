@@ -21,9 +21,7 @@ private:
     std::vector<individual> population;
     std::vector<Chromosome> population_chromosome;
 
-    void cross();
     void crossChromosome();
-    void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<unsigned>> &vec, bool isNotSingle);
     void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<individual>> &vec, bool isNotSingle);
     void mutate();
     unsigned generate_number();

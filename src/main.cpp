@@ -31,8 +31,8 @@ int main() {
     xml_node tools = doc.child("network").child("demands");
 
     int element_counter = 0;
-    int all_path_counter = 0;
     int path_counter = 0;
+    int link_counter = 0;
     for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
     {
 
@@ -53,10 +53,13 @@ int main() {
         //xml_node_iterator path_it = it->child("admissiblePaths");
         std::cout << "         ";
 
+        std::vector<std::vector<std::vector<unsigned>>> tmp_path;
         for (xml_node_iterator pit = path.begin(); pit != path.end(); ++pit)
         {
             //xml_node link = pit->child("admissiblePath");
 
+            
+            std::vector<std::vector<unsigned>> tmp_links;
             for(xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit)
             {
                 std::cout << " " << lit->child_value(); 
@@ -94,27 +97,29 @@ int main() {
                 a = std::stoi(a_char);
                 b = std::stoi(b_char);
 
+                std::vector<unsigned> tmp_link;
+
 
                 if(a < b)
                 {
-                    tab[element_counter][all_path_counter][path_counter].push_back(a);
-                    tab[element_counter][all_path_counter][path_counter].push_back(b);
+                    tmp_link.push_back(a);
+                    tmp_link.push_back(b);
                 }
                 else
                 {
-                    tab[element_counter][all_path_counter][path_counter].push_back(b);
-                    tab[element_counter][all_path_counter][path_counter].push_back(a);
+                    tmp_link.push_back(b);
+                    tmp_link.push_back(a);
                 }
 
-                path_counter++;
+                tmp_links.push_back(tmp_link);
             }
 
             std::cout << "   ";
-            all_path_counter++;
+            tmp_path.push_back(tmp_links);
         }
 
         std::cout << endl;
-        element_counter++;
+        tab.push_back(tmp_path);
     }
 
 

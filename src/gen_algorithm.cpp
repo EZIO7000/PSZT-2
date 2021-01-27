@@ -18,59 +18,6 @@ gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_proba
 /*
 *   Metoda wykonujaca krzyzowanie. Wybiera losowo ktore z pierwszych a elementow, potem kolejnych, bedzie pochodzic od ktorego rodzica.
 */
-void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, int crossed_element_numberP, std::vector<std::vector<unsigned>> &vec, bool isNotSingle)
-{
-    int a = generate_number() % lengthOfVector;
-
-    std::vector<unsigned> tmp;
-    tmp.reserve(lengthOfVector);
-    std::vector<unsigned> tmp2;
-    tmp2.reserve(lengthOfVector);
-    std::vector<unsigned> changed_element_number = population[changed_element_numberP].get_gene();
-    std::vector<unsigned> crossed_element_number = population[crossed_element_numberP].get_gene();
-
-    switch (method_number)
-    {
-    case 0: // Ab
-
-        for (int i = 0; i < a; i++)
-        {
-            tmp.push_back(crossed_element_number[i]);
-            if (isNotSingle)
-                tmp2.push_back(crossed_element_number[i]);
-        }
-        for (unsigned i = a; i < lengthOfVector; i++)
-        {
-            tmp.push_back(changed_element_number[i]);
-            if (isNotSingle)
-                tmp2.push_back(changed_element_number[i]);
-        }
-        break;
-
-    case 1: // aB
-
-        for (int i = 0; i < a; i++)
-        {
-            tmp.push_back(changed_element_number[i]);
-            if (isNotSingle)
-                tmp2.push_back(changed_element_number[i]);
-        }
-        for (unsigned i = a; i < lengthOfVector; i++)
-        {
-            tmp.push_back(crossed_element_number[i]);
-            if (isNotSingle)
-                tmp2.push_back(crossed_element_number[i]);
-        }
-        break;
-
-    default:
-        break;
-    }
-
-    vec.push_back(tmp);
-    if (isNotSingle)
-        vec.push_back(tmp2);
-}
 
 void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, int crossed_element_numberP, std::vector<std::vector<individual>> &vec, bool isNotSingle)
 {
@@ -126,88 +73,15 @@ void gen_algorithm::crossMethod(int method_number, int changed_element_numberP, 
         vec.push_back(tmp2);
 }
 
-
 /*
 *   Krzyzowanie jendopunktowe. Na podstawie prawdopodobienstwa tworzone sa 2 grupy, nastepnie elementy z grupy pierwszej lacza
 *   sie z elementami z grupy drugiej. Z dwoch rodzicow powstaje dwojka dzieci. 
 */
-void gen_algorithm::cross()
-{
-    std::vector<std::vector<unsigned>> vec;
-    vec.reserve(population.size());
-
-    std::vector<int> first_half;
-    std::vector<int> second_half;
-
-    first_half.reserve(population.size() / 2 + 1);
-    second_half.reserve(population.size() / 2);
-
-    bool first = true;
-
-    for (unsigned i = 0; i < population.size(); i++)
-    {
-        if (generate_number() % 100 < cross_probability)
-        {
-            if (first)
-            {
-                first_half.push_back(i);
-                first = false;
-            }
-            else
-            {
-                second_half.push_back(i);
-                first = true;
-            }
-        }
-        else
-        {
-            vec.push_back(population[i].get_gene());
-        }
-    }
-
-    if (second_half.size() == 0)                            // gdy prawdopodobienstwo jest tak male, ze zostal wylosowany tylko jeden osobnik do 
-    {                                                       // skrzyzowania, jest on skrzyzowany z losowym innym osobnikiem, natomiast ten drugi
-        int i = generate_number() % population.size();      // nie zostaje nadpisany przez dziecko
-        while (i == 0)
-        {
-            i = generate_number() % population.size();
-        }
-        crossMethod(generate_number() % 2, first_half[0], i, vec, false);
-    }
-    else
-    {
-        for (unsigned i = 0; i < first_half.size(); i++)
-        {
-            if (second_half.size() == 0)
-            {
-                int i = generate_number() % population.size();
-                while (i == first_half[0])  
-                {
-                    i = generate_number() % population.size();
-                }
-                crossMethod(generate_number() % 2, first_half[0], i, vec, false);
-            }
-            else
-            {
-                unsigned x = generate_number() % second_half.size();
-
-                crossMethod(generate_number() % 2, first_half[i], second_half[x], vec, true);
-
-                second_half.erase(second_half.begin() + x);
-            }
-        }
-    }
-
-    for (unsigned i = 0; i < vec.size(); i++)
-    {
-        population[i].set_gene(vec[i]);
-    }
-}
 
 void gen_algorithm::crossChromosome()
 {
     std::vector<std::vector<individual>> vec;
-    vec.reserve(population.size());
+    vec.reserve(population_chromosome.size());
 
     std::vector<int> first_half;
     std::vector<int> second_half;
@@ -365,7 +239,7 @@ void gen_algorithm::fintess_calc2() {
     for(auto &s : path_sum)
         s = 0;
     
-    for (auto &ch : population) {
+    for (auto &ch : population_chromosome) {
 
         for (int i = 0; i < 18; i++)
             for (int j = 0; j < 18; j++)
@@ -496,7 +370,7 @@ individual gen_algorithm::start() {
     for (unsigned i = 0; i < iteration_count; ++i)
     {
         selection();
-        cross();
+        crossChromosome();
         mutate();
         fintess_calc();
         //std::cout << "lewy: " << l_best_so_far;
