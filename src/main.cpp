@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include "pugixml.hpp"
+#include "string"
 
 using namespace std;
 using namespace pugi;
@@ -18,29 +19,39 @@ int main() {
     int gen_count = 500;
     std::string log;
 
+    std::vector<std::vector<std::vector<std::vector<unsigned>>>> tab;
+    std::vector<unsigned> demands;
+
     //////////////////////////////
 
-    cout << "\nParsing .....\n\n";
+    std::cout << "\nParsing .....\n\n";
     xml_document doc;
 
     if (!doc.load_file("bin/test.xml")) return -1;
     xml_node tools = doc.child("network").child("demands");
 
+    int element_counter = 0;
+    int all_path_counter = 0;
+    int path_counter = 0;
     for (xml_node_iterator it = tools.begin(); it != tools.end(); ++it)
     {
 
         for (xml_attribute_iterator ait = it->attributes_begin(); ait != it->attributes_end(); ++ait)
         {
-            cout << "Node " << ait->value();   
+            std::cout << "Node " << ait->value();   
         }
 
         // do uzupelnienia tablicy demands
-        cout << " " << it->child("demandValue").child_value();
+        std::cout << " " << it->child("demandValue").child_value();
+
+        // nie bedzie dzialac
+        demands.push_back(std::stoi(it->child("demandValue").child_value()));
+        std::cout << "{{{" << demands[element_counter] << "}}}";
 
         xml_node path = it->child("admissiblePaths");
 
         //xml_node_iterator path_it = it->child("admissiblePaths");
-        cout << "         ";
+        std::cout << "         ";
 
         for (xml_node_iterator pit = path.begin(); pit != path.end(); ++pit)
         {
@@ -48,14 +59,65 @@ int main() {
 
             for(xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit)
             {
-                cout << " " << lit->child_value();   
+                std::cout << " " << lit->child_value(); 
+
+                // zapisywanie do tablicy 2 elementowej
+                unsigned a;
+                unsigned b;
+                bool pierwsze = true;
+                bool drugie = true;
+
+                string a_char;
+                string b_char;
+
+                int pomin = 5;
+
+                string tmp_string = lit->child_value();
+                for(auto &it : tmp_string)
+                {
+                    if(pomin <= 0)
+                    {
+                        if(it == '_')
+                            pierwsze = false;
+
+                        if(it != '_')
+                        {
+                            if(pierwsze)
+                                a_char += it;
+                            else
+                                b_char += it;
+                        }
+                    }
+                    pomin--;
+                }
+
+                a = std::stoi(a_char);
+                b = std::stoi(b_char);
+
+
+                if(a < b)
+                {
+                    tab[element_counter][all_path_counter][path_counter].push_back(a);
+                    tab[element_counter][all_path_counter][path_counter].push_back(b);
+                }
+                else
+                {
+                    tab[element_counter][all_path_counter][path_counter].push_back(b);
+                    tab[element_counter][all_path_counter][path_counter].push_back(a);
+                }
+
+                path_counter++;
             }
 
-            cout << "   ";
+            std::cout << "   ";
+            all_path_counter++;
         }
 
-        cout << endl;
+        std::cout << endl;
+        element_counter++;
     }
+
+
 
     //////////////////////////////
 
