@@ -202,6 +202,68 @@ void gen_algorithm::mutate()
     }
 }
 
+void gen_algorithm::mutateChromosomes()
+{
+    long int numberOfAllElements = population_chromosome.size() * population_chromosome[0].get_chromosome().size(); //*
+                                     //population_chromosome[0].get_chromosome()[0].get_gene().size();
+
+    long int numberOfElementsToMutate = numberOfAllElements * mutation_probability / 1000;
+
+    for(long int i = 0; i < numberOfElementsToMutate; i++)
+    {
+        int x = generate_number() % population_chromosome.size();
+        int y = generate_number() % population_chromosome[0].get_chromosome().size();
+
+        std::vector<unsigned> tmpVec = population_chromosome[x].get_chromosome()[y].get_gene();
+
+        int paths = population_chromosome[x].get_chromosome()[y].get_gene().size();
+        int sum = 0;
+
+        std::vector<int> tmp;
+
+        tmp.push_back(0);
+        for(int a = 1; a < paths; a++)
+        {
+            tmp.push_back(generate_number() % 101);
+        }
+        tmp.push_back(100);
+        
+        std::sort(tmp.begin(), tmp.end());
+
+        for(int a = 0; a < paths; a++)
+        {
+            tmpVec[a] = tmp[a+1] - tmp[a];
+        }
+
+        population_chromosome[x].set_gene(y, tmpVec);
+    }
+}
+
+void gen_algorithm::mutateChromosomesOnePath()
+{
+    long int numberOfAllElements = population_chromosome.size() * population_chromosome[0].get_chromosome().size(); //*
+                                     //population_chromosome[0].get_chromosome()[0].get_gene().size();
+
+    long int numberOfElementsToMutate = numberOfAllElements * mutation_probability / 1000;
+
+    for(long int i = 0; i < numberOfElementsToMutate; i++)
+    {
+        int x = generate_number() % population_chromosome.size();
+        int y = generate_number() % population_chromosome[0].get_chromosome().size();
+
+        std::vector<unsigned> tmpVec = population_chromosome[x].get_chromosome()[y].get_gene();
+
+        int paths = population_chromosome[x].get_chromosome()[y].get_gene().size();
+        for(int a = 0; a < paths; a++)
+        {
+            tmpVec[a] = 0;
+        }
+        tmpVec[generate_number() % paths] = 1;
+        population_chromosome[x].set_gene(y, tmpVec);
+
+    }
+}
+
 void gen_algorithm::gen_function()
 {
 }

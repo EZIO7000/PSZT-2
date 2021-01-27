@@ -24,6 +24,8 @@ private:
     void crossChromosome();
     void crossMethod(int method_number, int changed_element_number, int crossed_element_number, std::vector<std::vector<individual>> &vec, bool isNotSingle);
     void mutate();
+    void mutateChromosomes();
+    void mutateChromosomesOnePath();
     unsigned generate_number();
     void gen_function();
     void fintess_calc();

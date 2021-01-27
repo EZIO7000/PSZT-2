@@ -63,6 +63,11 @@ void Chromosome::set_chromosome( std::vector<individual> & g ) {
     this->chromosome = g;
 }
 
+ void Chromosome::set_gene(int i, std::vector<unsigned> & g){
+
+     this->chromosome[i].set_gene(g);
+ }
+
 std::ostream & operator<< ( std::ostream & s, const Chromosome & in ) {
 
     for(auto & j : in.get_chromosome())

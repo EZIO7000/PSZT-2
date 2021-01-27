@@ -30,6 +30,8 @@ int main() {
     if (!doc.load_file("bin/test.xml")) return -1;
     xml_node tools = doc.child("network").child("demands");
 
+    std::cout << " Hej";
+
     int element_counter = 0;
     int path_counter = 0;
     int link_counter = 0;
@@ -46,7 +48,7 @@ int main() {
 
         // nie bedzie dzialac
         demands.push_back(std::stoi(it->child("demandValue").child_value()));
-        std::cout << "{{{" << demands[element_counter] << "}}}";
+        //std::cout << "{{{" << demands[element_counter] << "}}}";
 
         xml_node path = it->child("admissiblePaths");
 
@@ -62,7 +64,7 @@ int main() {
             std::vector<std::vector<unsigned>> tmp_links;
             for(xml_node_iterator lit = pit->children().begin(); lit != pit->children().end(); ++lit)
             {
-                std::cout << " " << lit->child_value(); 
+                //std::cout << " " << lit->child_value(); 
 
                 // zapisywanie do tablicy 2 elementowej
                 unsigned a;
@@ -99,7 +101,6 @@ int main() {
 
                 std::vector<unsigned> tmp_link;
 
-
                 if(a < b)
                 {
                     tmp_link.push_back(a);
@@ -114,13 +115,17 @@ int main() {
                 tmp_links.push_back(tmp_link);
             }
 
-            std::cout << "   ";
+            //std::cout << "   ";
             tmp_path.push_back(tmp_links);
         }
 
         std::cout << endl;
         tab.push_back(tmp_path);
     }
+
+    //std::cout << " Hej";// << tab[0][0][0][0];
+
+    std::cout << tab.size() << " " << tab[0].size() << " " << tab[0][0].size() << " " << tab[0][0][0].size() << std::endl;
 
 
 

@@ -16,6 +16,7 @@ public:
     bool operator< ( Chromosome const & other) const;
     //std::vector<unsigned>  const & get_gene(unsigned i) const;
     std::vector<individual>  const & get_chromosome() const;
+    void set_gene(int i, std::vector<unsigned> & g);
     //std::vector<unsigned>  const & get_gene(int i) const;
     unsigned get_fitness() const;
     void set_fitness( unsigned f );
