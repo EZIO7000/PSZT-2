@@ -266,7 +266,7 @@ unsigned gen_algorithm::generate_number()
     return generator();
 }
 
-void gen_algorithm::fintess_calc2(unsigned path_count, unsigned modularity) {
+void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity) {
     
     unsigned module_count;
 
@@ -397,6 +397,27 @@ void gen_algorithm::selection_tournament() {
 
     for( auto & i : temp )          //
         population.push_back(i);    // ładujemy nową populację.                              
+}
+
+void gen_algorithm::selection_tournament_chromosome() {
+
+    std::vector<Chromosome> temp;
+
+    for(unsigned x = 0; x < population_size; ++x) { // powtarzamy tyle razy ile wynosi wielkość populacji.
+
+        unsigned temp1 = generate_number() % population_size; //
+        unsigned temp2 = generate_number() % population_size; // losujemy 2 osobników z populacji.
+
+        if( population_chromosome[temp1] < population_chromosome[temp2] ) // 
+            temp.push_back(population_chromosome[temp2]);      //
+        else                                        //
+            temp.push_back(population_chromosome[temp1]);      // wybieramy lepszego.
+    }
+
+    population_chromosome.clear(); // czyścimy dotychczasową populację.
+
+    for( auto & i : temp )          //
+        population_chromosome.push_back(i);    // ładujemy nową populację.                              
 }
 
 individual gen_algorithm::start() {

@@ -32,12 +32,13 @@ private:
     unsigned generate_number();
     void gen_function();
     void fintess_calc();
-    void fintess_calc2(unsigned path_count, unsigned modularity);
+    void fintess_calc_chromosome(unsigned path_count, unsigned modularity);
     void selection();
     void initPopulation();
     void init_population_chromosome(unsigned path_count);
     void prepare_next_gen();
     void selection_tournament();
+    void selection_tournament_chromosome();
     void mutate_long();
     void load_data();
 
