@@ -268,7 +268,6 @@ unsigned gen_algorithm::generate_number()
 void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modularity, std::vector<Chromosome> &p) {
     
     unsigned module_count;
-    best_so_far = p[0];
 
     for(auto &ch : p) {
 
@@ -319,15 +318,20 @@ std::vector<Chromosome> gen_algorithm::selection_tournament_chromosome(std::vect
 void gen_algorithm::succession_chromosome(std::vector<Chromosome> p, unsigned k) {
 
     std::sort(population_chromosome.begin(), population_chromosome.end());
+    std::reverse(population_chromosome.begin(), population_chromosome.end());
     std::sort(p.begin(), p.end());
-    std::reverse(p.begin(), p.end());
 
     for(int i = 0; i < population_size - k; ++i) {
 
         population_chromosome.pop_back();
+    }
+    
+    for(int i = 0; i < population_size - k; ++i) {
+
         population_chromosome.push_back(p.back());
         p.pop_back();
     }
+
 }
 
 individual gen_algorithm::start() {
