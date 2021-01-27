@@ -25,7 +25,7 @@ int main() {
 
         for(int i = 0; i < 35; ++i ) {
 
-            std::cout << "j: " << j << "   i: " << i << std::endl;
+            //std::cout << "j: " << j << "   i: " << i << std::endl;
     
             gen_algorithm algorithm( populationSize, mutationPropability, crossPropability, parm_t, elemSize, gen_count);
 

@@ -16,6 +16,7 @@ private:
     unsigned cross_probability;
     unsigned parm_t;
     unsigned lengthOfVector;
+    unsigned modularity;
     unsigned iteration_count;
     Chromosome best_so_far;
     unsigned best_edges[12][12];
@@ -35,6 +36,7 @@ private:
     std::vector<Chromosome> selection_tournament_chromosome(std::vector<Chromosome> p);
     void succession_chromosome(std::vector<Chromosome> Ot, unsigned k);
     void load_data();
+    void show_edges();
 
 public:
 
