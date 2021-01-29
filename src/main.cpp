@@ -11,11 +11,11 @@ using namespace pugi;
 
 int main() {
 
-    int populationSize = 300;
+    int populationSize = 200;
     int pathCount = 3;
     int mutationPropability = 50;   // w promilach
     int crossPropability = 100;      // w procentach
-    int modularity = 1;
+    int modularity = 10;
     int gen_count = 200;
     std::string log;
     
@@ -30,9 +30,9 @@ int main() {
 
         for(int i = 0; i < 10; ++i ) {
 
-            std::cout << "j: " << j << "   i: " << i << std::endl;
+            //std::cout << "j: " << j << "   i: " << i << std::endl;
     
-            gen_algorithm algorithm( populationSize, mutationPropability, crossPropability, modularity + j*j*50, pathCount, gen_count);
+            gen_algorithm algorithm( populationSize, mutationPropability, crossPropability, modularity, pathCount, gen_count);
 
             auto start = std::chrono::system_clock::now();
             std::time_t time2 = std::chrono::system_clock::to_time_t( start );
@@ -56,7 +56,7 @@ int main() {
             log += ",";
             log += std::to_string(crossPropability);
             log += ",";
-            log += std::to_string(modularity + j*j*50);
+            log += std::to_string(modularity);
             log += ",";
             log += std::to_string(gen_count);
             log += ",";
