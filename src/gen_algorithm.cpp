@@ -4,16 +4,17 @@ gen_algorithm::gen_algorithm() = default;
 
 gen_algorithm::~gen_algorithm() = default;
 
-gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_probability, unsigned t, unsigned length_of_vector, unsigned iter_count)
+gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_probability, unsigned mod, unsigned path_count, unsigned iter_count)
 {
 
     population_size = p_size;
     mutation_probability = m_probability;
     cross_probability = c_probability;
-    parm_t = t;
+    //parm_t = t;
     lengthOfVector = 66; //length_of_vector;
+    path_count_global = path_count;
     iteration_count = iter_count;
-    modularity = 500;
+    modularity = mod;
     load_data();
 }
 
@@ -213,11 +214,41 @@ std::vector<Chromosome> gen_algorithm::mutateChromosomesOnePath(std::vector<Chro
         {
             tmpVec[a] = 0;
         }
-        tmpVec[generate_number() % paths] = 1;
+        tmpVec[generate_number() % paths] = 100;
         pop[x].set_gene(y, tmpVec);
 
     }
     return pop;
+}
+
+void gen_algorithm::init_population_chromosome_one_path(unsigned path_count){
+
+        for (unsigned i = 0; i < population_size; i++) {
+        
+        std::vector<individual> temp;
+
+        for(unsigned j = 0; j < 66; ++j) {
+
+            std::vector<unsigned> tmp, tmp2;
+
+            tmp2.resize(path_count);
+
+            for(int a = 0; a < path_count; a++)
+            {
+                tmp2[a] = 0;
+            }
+
+            tmp2[generate_number() % path_count] = 100;
+
+            individual ind;
+            ind.set_gene(tmp2);
+            temp.push_back(ind);
+        }
+
+        Chromosome ch;
+        ch.set_chromosome(temp);
+        population_chromosome.push_back(ch);
+    }
 }
 
 void gen_algorithm::init_population_chromosome(unsigned path_count) {
@@ -334,21 +365,38 @@ void gen_algorithm::succession_chromosome(std::vector<Chromosome> p, unsigned k)
 
 }
 
-individual gen_algorithm::start() {
+Chromosome gen_algorithm::startFullDezagregation() {
 
-    init_population_chromosome(6);
-    fintess_calc_chromosome(6, modularity, population_chromosome);
+    init_population_chromosome(path_count_global);
+    fintess_calc_chromosome(path_count_global, modularity, population_chromosome);
     for (unsigned i = 0; i < iteration_count; ++i)
     {
         std::vector<Chromosome> new_population = selection_tournament_chromosome(population_chromosome);
         new_population = crossChromosome(new_population);
         new_population = mutateChromosomes(new_population);
-        fintess_calc_chromosome(6, modularity, new_population);
+        fintess_calc_chromosome(path_count_global, modularity, new_population);
         succession_chromosome(new_population, 100);
         show_edges();
-        std::cout << "Numer populacji: " << i << std::endl;
+        std::cout << "Numer generacji: " << i << std::endl;
     }
-    //return best_so_far;
+    return best_so_far;
+}
+
+Chromosome gen_algorithm::startFullAgregation() {
+
+    init_population_chromosome_one_path(path_count_global);
+    fintess_calc_chromosome(path_count_global, modularity, population_chromosome);
+    for (unsigned i = 0; i < iteration_count; ++i)
+    {
+        std::vector<Chromosome> new_population = selection_tournament_chromosome(population_chromosome);
+        new_population = crossChromosome(new_population);
+        new_population = mutateChromosomesOnePath(new_population);
+        fintess_calc_chromosome(path_count_global, modularity, new_population);
+        succession_chromosome(new_population, 100);
+        //show_edges();
+        //std::cout << "Numer generacji: " << i << std::endl;
+    }
+    return best_so_far;
 }
 
 void gen_algorithm::load_data() {
