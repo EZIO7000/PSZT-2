@@ -37,11 +37,6 @@ std::vector<individual> const & Chromosome::get_chromosome() const {
     return this->chromosome;
 }
 
-// std::vector<unsigned> const & Chromosome::get_gene(int i) const{
-
-//     return this->chromosome[i];
-
-// }
 
 unsigned Chromosome::get_fitness() const {
 
@@ -71,13 +66,3 @@ std::ostream & operator<< ( std::ostream & s, const Chromosome & in ) {
     }
     return s;
 }
-
-/*
-std::string & operator+=( std::string & s, const Chromosome & in ) {
-
-    for( auto & j : in.get_chromosome() )
-        s += std::to_string(j);
-   
-    return s;
-}
-*/

@@ -37,6 +37,7 @@ int main() {
             auto start = std::chrono::system_clock::now();
             std::time_t time2 = std::chrono::system_clock::to_time_t( start );
 
+            // zmiana agregacji
             Chromosome temp = algorithm.startFullAgregation();
             //Chromosome temp = algorithm.startFullDezagregation();
 

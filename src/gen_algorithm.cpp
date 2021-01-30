@@ -10,7 +10,6 @@ gen_algorithm::gen_algorithm(unsigned p_size, float m_probability, float c_proba
     population_size = p_size;
     mutation_probability = m_probability;
     cross_probability = c_probability;
-    //parm_t = t;
     lengthOfVector = 66; //length_of_vector;
     path_count_global = path_count;
     iteration_count = iter_count;
@@ -171,7 +170,6 @@ std::vector<Chromosome> gen_algorithm::mutateChromosomes(std::vector<Chromosome>
         std::vector<unsigned> tmpVec = pop[x].get_chromosome()[y].get_gene();
 
         int paths = pop[x].get_chromosome()[y].get_gene().size();
-        int sum = 0;
 
         std::vector<int> tmp;
 
@@ -233,7 +231,7 @@ void gen_algorithm::init_population_chromosome_one_path(unsigned path_count){
 
             tmp2.resize(path_count);
 
-            for(int a = 0; a < path_count; a++)
+            for(unsigned a = 0; a < path_count; a++)
             {
                 tmp2[a] = 0;
             }
@@ -309,7 +307,7 @@ void gen_algorithm::fintess_calc_chromosome(unsigned path_count, unsigned modula
                 edges[i][j] = 0;
 
         for(int i = 0; i < 66; i++)
-            for(int j = 0; j < path_count; j++)
+            for(unsigned j = 0; j < path_count; j++)
                 for(auto &link : demand_paths[i][j])
                     edges[link[0]][link[1]] += ch.get_chromosome()[i].get_gene()[j] * demands[i];
         
@@ -352,12 +350,12 @@ void gen_algorithm::succession_chromosome(std::vector<Chromosome> p, unsigned k)
     std::reverse(population_chromosome.begin(), population_chromosome.end());
     std::sort(p.begin(), p.end());
 
-    for(int i = 0; i < population_size - k; ++i) {
+    for(unsigned i = 0; i < population_size - k; ++i) {
 
         population_chromosome.pop_back();
     }
     
-    for(int i = 0; i < population_size - k; ++i) {
+    for(unsigned i = 0; i < population_size - k; ++i) {
 
         population_chromosome.push_back(p.back());
         p.pop_back();
@@ -375,7 +373,7 @@ Chromosome gen_algorithm::startFullDezagregation() {
         new_population = crossChromosome(new_population);
         new_population = mutateChromosomes(new_population);
         fintess_calc_chromosome(path_count_global, modularity, new_population);
-        succession_chromosome(new_population, 100);
+        succession_chromosome(new_population, population_size*0.4);
         show_edges();
         std::cout << "Numer generacji: " << i << std::endl;
     }
@@ -392,9 +390,9 @@ Chromosome gen_algorithm::startFullAgregation() {
         new_population = crossChromosome(new_population);
         new_population = mutateChromosomesOnePath(new_population);
         fintess_calc_chromosome(path_count_global, modularity, new_population);
-        succession_chromosome(new_population, 100);
-        //show_edges();
-        //std::cout << "Numer generacji: " << i << std::endl;
+        succession_chromosome(new_population, population_size*0.4);
+        show_edges();
+        std::cout << "Numer generacji: " << i << std::endl;
     }
     return best_so_far;
 }
@@ -404,9 +402,6 @@ void gen_algorithm::load_data() {
     pugi::xml_document doc;
     doc.load_file("bin/test.xml");
     pugi::xml_node tools = doc.child("network").child("demands");
-    int element_counter = 0;
-    int path_counter = 0;
-    int link_counter = 0;
 
     for (pugi::xml_node_iterator it = tools.begin(); it != tools.end(); ++it) {
         
